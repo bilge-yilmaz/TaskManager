@@ -13,6 +13,12 @@ bld/
 [Ll]og/
 [Ll]ogs/
 
+# Build output directories (additional safety)
+bin/
+obj/
+Debug/
+Release/
+
 # Visual Studio 2015/2017 cache/options directory
 .vs/
 
