@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Görev Yöneticisi</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-tasks me-2"></i>
+                Görev Yöneticisi
+            </a>
+            <div class="navbar-nav ms-auto">
+                <div id="userInfo" class="navbar-text me-3" style="display: none;">
+                    Hoş geldin, <span id="userName"></span>
+                </div>
+                <button id="logoutBtn" class="btn btn-outline-light btn-sm" style="display: none;">
+                    <i class="fas fa-sign-out-alt"></i> Çıkış
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Login/Register Modal -->
+    <div class="modal fade" id="authModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="authModalTitle">Giriş Yap</h5>
+                </div>
+                <div class="modal-body">
+                    <!-- Login Form -->
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label for="loginUsername" class="form-label">Kullanıcı Adı veya E-posta</label>
+                            <input type="text" class="form-control" id="loginUsername" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="loginPassword" class="form-label">Şifre</label>
+                            <input type="password" class="form-control" id="loginPassword" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Giriş Yap</button>
+                    </form>
+
+                    <!-- Register Form -->
+                    <form id="registerForm" style="display: none;">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="registerFirstName" class="form-label">Ad</label>
+                                <input type="text" class="form-control" id="registerFirstName" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="registerLastName" class="form-label">Soyad</label>
+                                <input type="text" class="form-control" id="registerLastName" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="registerUsername" class="form-label">Kullanıcı Adı</label>
+                            <input type="text" class="form-control" id="registerUsername" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="registerEmail" class="form-label">E-posta</label>
+                            <input type="email" class="form-control" id="registerEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="registerPassword" class="form-label">Şifre</label>
+                            <input type="password" class="form-control" id="registerPassword" required>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">Kayıt Ol</button>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <button id="toggleAuth" class="btn btn-link">Hesabın yok mu? Kayıt ol</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mt-4" id="mainContent" style="display: none;">
+        <!-- Dashboard Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title">Toplam Görev</h6>
+                                <h3 id="totalTasks">0</h3>
+                            </div>
+                            <i class="fas fa-tasks fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title">Tamamlanan</h6>
+                                <h3 id="completedTasks">0</h3>
+                            </div>
+                            <i class="fas fa-check-circle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title">Bekleyen</h6>
+                                <h3 id="pendingTasks">0</h3>
+                            </div>
+                            <i class="fas fa-clock fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-danger text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title">Süresi Geçen</h6>
+                                <h3 id="overdueTasks">0</h3>
+                            </div>
+                            <i class="fas fa-exclamation-triangle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Task Form -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5><i class="fas fa-plus me-2"></i>Yeni Görev Ekle</h5>
+            </div>
+            <div class="card-body">
+                <form id="addTaskForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="taskTitle" class="form-label">Başlık</label>
+                            <input type="text" class="form-control" id="taskTitle" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="taskPriority" class="form-label">Öncelik</label>
+                            <select class="form-select" id="taskPriority">
+                                <option value="1">Düşük</option>
+                                <option value="2" selected>Orta</option>
+                                <option value="3">Yüksek</option>
+                                <option value="4">Kritik</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="taskCategory" class="form-label">Kategori</label>
+                            <select class="form-select" id="taskCategory">
+                                <option value="1" selected>Kişisel</option>
+                                <option value="2">İş</option>
+                                <option value="3">Sağlık</option>
+                                <option value="4">Eğitim</option>
+                                <option value="5">Finans</option>
+                                <option value="6">Alışveriş</option>
+                                <option value="7">Seyahat</option>
+                                <option value="8">Diğer</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="taskDescription" class="form-label">Açıklama</label>
+                            <textarea class="form-control" id="taskDescription" rows="3"></textarea>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="taskDueDate" class="form-label">Bitiş Tarihi</label>
+                            <input type="datetime-local" class="form-control" id="taskDueDate">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="taskTags" class="form-label">Etiketler (virgülle ayırın)</label>
+                        <input type="text" class="form-control" id="taskTags" placeholder="örn: önemli, acil, proje">
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Görev Ekle
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Filter and Search -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5><i class="fas fa-filter me-2"></i>Filtrele ve Ara</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label for="filterStatus" class="form-label">Durum</label>
+                        <select class="form-select" id="filterStatus">
+                            <option value="">Tümü</option>
+                            <option value="false">Bekleyen</option>
+                            <option value="true">Tamamlanan</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="filterPriority" class="form-label">Öncelik</label>
+                        <select class="form-select" id="filterPriority">
+                            <option value="">Tümü</option>
+                            <option value="1">Düşük</option>
+                            <option value="2">Orta</option>
+                            <option value="3">Yüksek</option>
+                            <option value="4">Kritik</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="filterCategory" class="form-label">Kategori</label>
+                        <select class="form-select" id="filterCategory">
+                            <option value="">Tümü</option>
+                            <option value="1">Kişisel</option>
+                            <option value="2">İş</option>
+                            <option value="3">Sağlık</option>
+                            <option value="4">Eğitim</option>
+                            <option value="5">Finans</option>
+                            <option value="6">Alışveriş</option>
+                            <option value="7">Seyahat</option>
+                            <option value="8">Diğer</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="searchTerm" class="form-label">Ara</label>
+                        <input type="text" class="form-control" id="searchTerm" placeholder="Başlık veya açıklama...">
+                    </div>
+                </div>
+                <button id="applyFilters" class="btn btn-outline-primary">
+                    <i class="fas fa-search me-2"></i>Filtrele
+                </button>
+                <button id="clearFilters" class="btn btn-outline-secondary ms-2">
+                    <i class="fas fa-times me-2"></i>Temizle
+                </button>
+            </div>
+        </div>
+
+        <!-- Tasks List -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5><i class="fas fa-list me-2"></i>Görevlerim</h5>
+                <button id="refreshTasks" class="btn btn-outline-primary btn-sm">
+                    <i class="fas fa-sync-alt"></i> Yenile
+                </button>
+            </div>
+            <div class="card-body">
+                <div id="tasksContainer">
+                    <div class="text-center py-4">
+                        <i class="fas fa-spinner fa-spin fa-2x text-muted"></i>
+                        <p class="mt-2 text-muted">Görevler yükleniyor...</p>
+                    </div>
+                </div>
+                
+                <!-- Pagination -->
+                <nav aria-label="Görev sayfalama" class="mt-4">
+                    <ul class="pagination justify-content-center" id="pagination">
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Task Edit Modal -->
+    <div class="modal fade" id="editTaskModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Görev Düzenle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editTaskForm">
+                        <input type="hidden" id="editTaskId">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="editTaskTitle" class="form-label">Başlık</label>
+                                <input type="text" class="form-control" id="editTaskTitle" required>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="editTaskPriority" class="form-label">Öncelik</label>
+                                <select class="form-select" id="editTaskPriority">
+                                    <option value="1">Düşük</option>
+                                    <option value="2">Orta</option>
+                                    <option value="3">Yüksek</option>
+                                    <option value="4">Kritik</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="editTaskCategory" class="form-label">Kategori</label>
+                                <select class="form-select" id="editTaskCategory">
+                                    <option value="1">Kişisel</option>
+                                    <option value="2">İş</option>
+                                    <option value="3">Sağlık</option>
+                                    <option value="4">Eğitim</option>
+                                    <option value="5">Finans</option>
+                                    <option value="6">Alışveriş</option>
+                                    <option value="7">Seyahat</option>
+                                    <option value="8">Diğer</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="editTaskDescription" class="form-label">Açıklama</label>
+                                <textarea class="form-control" id="editTaskDescription" rows="3"></textarea>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="editTaskDueDate" class="form-label">Bitiş Tarihi</label>
+                                <input type="datetime-local" class="form-control" id="editTaskDueDate">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editTaskTags" class="form-label">Etiketler (virgülle ayırın)</label>
+                            <input type="text" class="form-control" id="editTaskTags">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="button" class="btn btn-primary" id="saveTaskChanges">Kaydet</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html> 
