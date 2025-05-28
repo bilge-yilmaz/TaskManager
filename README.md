@@ -51,11 +51,19 @@ Modern ve kullanıcı dostu bir görev yönetim uygulaması. ASP.NET Core Web AP
 
 3. **MongoDB bağlantısını yapılandırın**
    
-   `appsettings.json` dosyasında MongoDB connection string'ini güncelleyin:
+   `appsettings.json.example` dosyasını `appsettings.json` olarak kopyalayın ve MongoDB connection string'ini güncelleyin:
+   ```bash
+   cp appsettings.json.example appsettings.json
+   ```
+   
+   Sonra `appsettings.json` dosyasında şu değerleri güncelleyin:
    ```json
    {
      "ConnectionStrings": {
-       "MongoDB": "your-mongodb-connection-string"
+       "MongoDB": "your-mongodb-atlas-connection-string"
+     },
+     "JwtSettings": {
+       "SecretKey": "your-secure-secret-key-minimum-32-characters"
      }
    }
    ```

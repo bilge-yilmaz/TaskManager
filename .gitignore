@@ -32,6 +32,19 @@ bld/
 # Mono auto generated files
 mono_crash.*
 
+# Configuration files with sensitive data
+appsettings.json
+appsettings.*.json
+!appsettings.Development.json.example
+!appsettings.Production.json.example
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
@@ -336,13 +349,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-
-# Environment variables
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
 
 # IDE
 .idea/
